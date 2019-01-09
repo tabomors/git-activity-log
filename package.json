@@ -1,0 +1,21 @@
+{
+  "name": "git-activity-formatter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^23.6.0",
+    "nodemon": "^1.18.9"
+  },
+  "dependencies": {
+    "dayjs": "^1.7.8",
+    "ramda": "^0.26.1"
+  }
+}
