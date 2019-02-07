@@ -1,3 +1,5 @@
 node_modules
 *.log
-sandbox.js
+*-log.json
+logs
+gen-reports.sh
