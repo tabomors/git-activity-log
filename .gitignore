@@ -3,3 +3,5 @@ node_modules
 *-log.json
 logs
 gen-reports.sh
+credentials.json
+token.json
