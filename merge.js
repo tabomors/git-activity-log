@@ -10,6 +10,8 @@ const { argv } = require("yargs").array("logs");
 
 // TODO: add error handling
 
+console.log('\x1b[36m%s\x1b[0m', `These logs will be merged: ${argv.logs.join(', ')}\n`)
+
 // Read log files as a streams
 const readStreams = argv.logs.map(fileName => fs.createReadStream(path.join(__dirname, fileName)))
 // Combine them to one stream
@@ -18,8 +20,10 @@ readStreams.forEach(readStream => {
   combinedStream.append(toJsonStream(readStream));
 })
 
+const writeStream = fs.createWriteStream(path.join(__dirname, 'logs', 'worklogs.json'), {encoding: 'utf-8'})
+
 combinedStream.pipe(toJSON())
-  .pipe(process.stdout)
+  .pipe(writeStream)
 
 function toJSON () {
   const objs = [];
@@ -34,13 +38,6 @@ function toJSON () {
     }
   );
 };
-
-
-// const concatStream = concat(baz);
-
-// function baz(data) {
-//   console.log(JSON.parse(data, null, "\t"));
-// }
 
 function toJsonStream(x) {
   return x.pipe(StreamArray.withParser()).pipe(
