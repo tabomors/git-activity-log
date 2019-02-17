@@ -5,3 +5,4 @@ logs
 gen-reports.sh
 credentials.json
 token.json
+.vscode
