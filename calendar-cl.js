@@ -36,15 +36,12 @@ async function main() {
   try {
     // debugger;
     // TODO: use stream for reading worklogs
-    let worklogs = JSON.parse(fs.readFileSync(worlogsPath, "utf-8"));
-
-    worklogs = worklogs.slice(0, 4); // TODO: remove it. It is just for debug
-
-    // worklogs = worklogs.map(workLogToEventFormat)
-    // console.log(worklogs);
+    const worklogs = JSON.parse(fs.readFileSync(worlogsPath, "utf-8"));
 
     const credentials = JSON.parse(await readFileAsync(CREDENTIALS_PATH));
     const auth = await authorize(credentials);
+
+    await clearEventsOfTheMonth(auth);
 
     const dates = {};
 
@@ -177,6 +174,43 @@ function workLogToEventFormat(workLog) {
     start: { dateTime: startDate.format(CALENDAR_DATE_FORMAT) },
     end: { dateTime: endDate.format(CALENDAR_DATE_FORMAT) }
   };
+}
+
+async function fetchEventsOfTheMonth(auth) {
+  const calendar = google.calendar({ version: "v3", auth });
+  const startOfTheMonth = dayjs()
+    .startOf("month")
+    .toISOString();
+  const endOfTheMonth = dayjs()
+    .startOf("month")
+    .add(1, "month")
+    .toISOString();
+  return calendar.events
+    .list({
+      calendarId: "primary",
+      timeMin: startOfTheMonth,
+      timeMax: endOfTheMonth
+    })
+    .then(res => res.data.items);
+}
+
+function deleteEvent(auth, eventId) {
+  const calendar = google.calendar({ version: "v3", auth });
+  return calendar.events.delete({
+    calendarId: "primary",
+    eventId
+  });
+}
+
+async function clearEventsOfTheMonth(auth) {
+  const events = await fetchEventsOfTheMonth(auth);
+
+  for (const { id: eventId } of events) {
+    if (eventId) {
+      const res = await deleteEvent(auth, eventId);
+      console.log(`event ${eventId} was deleted`, res);
+    }
+  }
 }
 
 // Script starts from here
