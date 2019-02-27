@@ -1,44 +1,44 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const path = require("path");
-const { promisify } = require("util");
-const readline = require("readline");
+const fs = require('fs');
+const path = require('path');
+const { promisify } = require('util');
+const readline = require('readline');
 // TODO: move api to different module
-const { google } = require("googleapis");
-const dayjs = require("dayjs");
+const { google } = require('googleapis');
+const dayjs = require('dayjs');
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ["https://www.googleapis.com/auth/calendar"];
+const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
-const TOKEN_PATH = "token.json";
-const CREDENTIALS_PATH = "credentials.json";
+const TOKEN_PATH = 'token.json';
+const CREDENTIALS_PATH = 'credentials.json';
 
-const CALENDAR_DATE_FORMAT = "YYYY-MM-DDTHH:mm:ssZ";
-const DATE_FORMAT = "YYYY-MM-DD";
+const CALENDAR_DATE_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ';
+const DATE_FORMAT = 'YYYY-MM-DD';
 const START_HOUR = 11;
 const DAY_DURATION = 8;
-const INVALID_DATE = "Invalid date";
+const INVALID_DATE = 'Invalid date';
 
 const readFileAsync = promisify(fs.readFile);
 
 function ask(rl, question) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     rl.question(question, input => resolve(input));
   });
 }
 
 // TODO: use argv to provide worlogsPath
-const worlogsPath = path.join(__dirname, "logs", "worklogs.json");
+const worlogsPath = path.join(__dirname, 'logs', 'worklogs.json');
 
 async function main() {
   // TODO: add logging
   try {
     // debugger;
     // TODO: use stream for reading worklogs
-    const worklogs = JSON.parse(fs.readFileSync(worlogsPath, "utf-8"));
+    const worklogs = JSON.parse(fs.readFileSync(worlogsPath, 'utf-8'));
 
     const credentials = JSON.parse(await readFileAsync(CREDENTIALS_PATH));
     const auth = await authorize(credentials);
@@ -55,12 +55,12 @@ async function main() {
         const event = await getEvent(eventId, auth);
         const { data: updatedEventData } = updateEventDescription(
           event,
-          eventFormatWorklog.description
+          eventFormatWorklog.description,
         );
         const updateEventRes = await updateEvent(
           eventId,
           updatedEventData,
-          auth
+          auth,
         );
         // console.log(`${eventId} was updated with`, updateEventRes);
       } else {
@@ -81,7 +81,7 @@ async function authorize(credentials) {
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
     client_secret,
-    redirect_uris[0]
+    redirect_uris[0],
   );
 
   try {
@@ -100,29 +100,28 @@ async function authorize(credentials) {
  */
 async function getAccessToken(oAuth2Client) {
   const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: "offline",
-    scope: SCOPES
+    access_type: 'offline',
+    scope: SCOPES,
   });
-  console.log("Authorize this app by visiting this url:", authUrl);
+  console.log('Authorize this app by visiting this url:', authUrl);
 
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   });
 
-  const code = await ask(rl, "Enter the code from that page here: ");
+  const code = await ask(rl, 'Enter the code from that page here: ');
   rl.close();
 
   return new Promise((res, rej) => {
     oAuth2Client.getToken(code, (err, token) => {
-      if (err)
-        return rej(Error(`Error retrieving access token. ${err.message}`));
+      if (err) return rej(Error(`Error retrieving access token. ${err.message}`));
 
       oAuth2Client.setCredentials(token);
       // Store the token to disk for later program executions
-      fs.writeFile(TOKEN_PATH, JSON.stringify(token), err => {
+      fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
         if (err) console.error(err);
-        console.log("Token stored to", TOKEN_PATH);
+        console.log('Token stored to', TOKEN_PATH);
       });
       return res(oAuth2Client);
     });
@@ -130,77 +129,77 @@ async function getAccessToken(oAuth2Client) {
 }
 
 function insertEvent(eventData, auth) {
-  const calendar = google.calendar({ version: "v3", auth });
+  const calendar = google.calendar({ version: 'v3', auth });
   return calendar.events.insert({
-    calendarId: "primary",
-    resource: eventData
+    calendarId: 'primary',
+    resource: eventData,
   });
 }
 
 function getEvent(eventId, auth) {
-  const calendar = google.calendar({ version: "v3", auth });
-  return calendar.events.get({ calendarId: "primary", eventId });
+  const calendar = google.calendar({ version: 'v3', auth });
+  return calendar.events.get({ calendarId: 'primary', eventId });
 }
 
 function updateEvent(eventId, eventData, auth) {
-  console.log("");
-  console.log("updateEvent", eventData);
+  console.log('');
+  console.log('updateEvent', eventData);
   console.log();
-  const calendar = google.calendar({ version: "v3", auth });
+  const calendar = google.calendar({ version: 'v3', auth });
   return calendar.events.update({
-    calendarId: "primary",
+    calendarId: 'primary',
     eventId,
-    resource: eventData
+    resource: eventData,
   });
 }
 
 function updateEventDescription(event, additions) {
   const data = {
     ...event.data,
-    description: `${event.data.description}\n${additions}`
+    description: `${event.data.description}\n${additions}`,
   };
   return { ...event, data };
 }
 
 function workLogToEventFormat(workLog) {
-  const startDate = dayjs(workLog.date).set("hour", START_HOUR);
-  const endDate = dayjs(startDate).add(DAY_DURATION, "hour");
+  const startDate = dayjs(workLog.date).set('hour', START_HOUR);
+  const endDate = dayjs(startDate).add(DAY_DURATION, 'hour');
 
   if (startDate === INVALID_DATE || endDate === INVALID_DATE) {
     throw new Error(`${workLog.date} is invalid date`);
   }
 
   return {
-    summary: "",
+    summary: '',
     description: workLog.message,
     start: { dateTime: startDate.format(CALENDAR_DATE_FORMAT) },
-    end: { dateTime: endDate.format(CALENDAR_DATE_FORMAT) }
+    end: { dateTime: endDate.format(CALENDAR_DATE_FORMAT) },
   };
 }
 
 async function fetchEventsOfTheMonth(auth) {
-  const calendar = google.calendar({ version: "v3", auth });
+  const calendar = google.calendar({ version: 'v3', auth });
   const startOfTheMonth = dayjs()
-    .startOf("month")
+    .startOf('month')
     .toISOString();
   const endOfTheMonth = dayjs()
-    .startOf("month")
-    .add(1, "month")
+    .startOf('month')
+    .add(1, 'month')
     .toISOString();
   return calendar.events
     .list({
-      calendarId: "primary",
+      calendarId: 'primary',
       timeMin: startOfTheMonth,
-      timeMax: endOfTheMonth
+      timeMax: endOfTheMonth,
     })
     .then(res => res.data.items);
 }
 
 function deleteEvent(auth, eventId) {
-  const calendar = google.calendar({ version: "v3", auth });
+  const calendar = google.calendar({ version: 'v3', auth });
   return calendar.events.delete({
-    calendarId: "primary",
-    eventId
+    calendarId: 'primary',
+    eventId,
   });
 }
 
