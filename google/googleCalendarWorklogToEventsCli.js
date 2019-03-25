@@ -10,16 +10,16 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-const googleApiAuth = require('./google/googleApiAuth');
-const googleCalendarEventsApi = require('./google/googleCalendarEventsApi');
-const googleCalendarEventsUtils = require('./google/googleCalendarEventsUtils');
+const googleApiAuth = require('./googleApiAuth');
+const googleCalendarEventsApi = require('./googleCalendarEventsApi');
+const googleCalendarEventsUtils = require('./googleCalendarEventsUtils');
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 
 // TODO: use argv to provide these variables
-const CREDENTIALS_PATH = 'credentials.json';
-const TOKEN_PATH = 'token.json'; // it is optional
-const worlogsPath = path.join(__dirname, 'logs', 'worklogs.json');
+const CREDENTIALS_PATH = path.join(__dirname, '..', 'credentials.json');
+const TOKEN_PATH = path.join(__dirname, '..', 'token.json'); // it is optional
+const worlogsPath = path.join(__dirname, '..', 'logs', 'worklogs.json');
 
 async function main() {
   try {
