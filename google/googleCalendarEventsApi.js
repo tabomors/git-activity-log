@@ -37,8 +37,8 @@ async function clearEventsOfTheMonth(calendar) {
 
   for (const { id: eventId } of events) {
     if (eventId) {
-      const res = await deleteEvent(calendar, eventId);
-      console.log(`event ${eventId} was deleted`, res);
+      await deleteEvent(calendar, eventId);
+      console.log(`event ${eventId} was deleted`);
     }
   }
 }

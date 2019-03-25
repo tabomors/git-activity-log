@@ -39,18 +39,19 @@ async function main() {
       const eventId = dates[date];
       const eventFormatWorklog = googleCalendarEventsUtils.workLogToEventFormat(workLog);
       if (eventId) {
+        console.log(`Updating existing event: ${eventId}`);
         const event = await googleCalendarEventsApi.getEvent(calendar, eventId);
         const { data: updatedEventData } = googleCalendarEventsUtils.updateEventDescription(
           event,
           eventFormatWorklog.description,
         );
-        const updateEventRes = await googleCalendarEventsApi.updateEvent(
+        await googleCalendarEventsApi.updateEvent(
           calendar,
           eventId,
           updatedEventData,
         );
-        console.log(`Updated event res: ${updateEventRes}`);
       } else {
+        console.log('Inserting new event');
         const insertEventRes = await googleCalendarEventsApi
           .insertEvent(calendar, eventFormatWorklog);
         const { data: insertEventResData } = insertEventRes;
@@ -62,7 +63,6 @@ async function main() {
   }
 }
 
-// FIXME: Authorize does not work
 function authorize(credentials) {
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = googleApiAuth.makeOAuth2Client(
@@ -72,8 +72,9 @@ function authorize(credentials) {
   );
 
   try {
-    const token = fs.readFileSync(TOKEN_PATH, 'utf-8');
-    return googleApiAuth.updateClientWithToken(oAuth2Client, token);
+    const token = JSON.parse(fs.readFileSync(TOKEN_PATH, 'utf-8'));
+    oAuth2Client.setCredentials(token);
+    return oAuth2Client;
   } catch (e) {
     const authUrl = googleApiAuth.generateAuthUrl(oAuth2Client, SCOPES);
     console.log('Authorize this app by visiting this url:', authUrl);
@@ -86,9 +87,9 @@ function authorize(credentials) {
     return new Promise((res, rej) => {
       rl.question('Enter the code from that page here: ', async (code) => {
         try {
-          const token = await googleApiAuth.getClientsToken(oAuth2Client, code);
-          googleApiAuth.updateClientWithToken(oAuth2Client, token);
-          fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+          const { tokens } = await googleApiAuth.getClientsToken(oAuth2Client, code);
+          oAuth2Client.setCredentials(tokens);
+          fs.writeFile(TOKEN_PATH, JSON.stringify(tokens), (err) => {
             if (err) console.error(err);
             console.log('Token stored to', TOKEN_PATH);
           });
