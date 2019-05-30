@@ -2,6 +2,7 @@ node_modules
 *.log
 *-log.json
 logs
+projects.json
 gen-reports.sh
 credentials.json
 token.json

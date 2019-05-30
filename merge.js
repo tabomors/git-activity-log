@@ -13,7 +13,7 @@ const { argv } = require('yargs').array('logs');
 console.log('\x1b[36m%s\x1b[0m', `These logs will be merged: ${argv.logs.join(', ')}\n`);
 
 // Read log files as a streams
-const readStreams = argv.logs.map(fileName => fs.createReadStream(path.join(__dirname, fileName)));
+const readStreams = argv.logs.map(fileName => fs.createReadStream(path.resolve(__dirname, fileName)));
 // Combine them to one stream
 const combinedStream = CombinedStream.create();
 readStreams.forEach((readStream) => {
