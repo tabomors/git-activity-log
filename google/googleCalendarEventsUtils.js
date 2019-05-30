@@ -8,7 +8,7 @@ const START_HOUR = 11;
 function updateEventDescription(event, additions) {
   const data = {
     ...event.data,
-    description: `${event.data.description}\n${additions}`,
+    description: `${event.data.description}\n${additions}`
   };
   return { ...event, data };
 }
@@ -25,11 +25,11 @@ function workLogToEventFormat(workLog) {
     summary: '',
     description: workLog.message,
     start: { dateTime: startDate.format(CALENDAR_DATE_FORMAT) },
-    end: { dateTime: endDate.format(CALENDAR_DATE_FORMAT) },
+    end: { dateTime: endDate.format(CALENDAR_DATE_FORMAT) }
   };
 }
 
 module.exports = {
   updateEventDescription,
-  workLogToEventFormat,
+  workLogToEventFormat
 };

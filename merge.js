@@ -5,7 +5,6 @@ const path = require('path');
 const through = require('through2');
 const CombinedStream = require('combined-stream');
 const StreamArray = require('stream-json/streamers/StreamArray');
-const concat = require('concat-stream');
 const { argv } = require('yargs').array('logs');
 
 // TODO: add error handling

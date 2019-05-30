@@ -1,11 +1,5 @@
 #!/usr/bin/env node
 
-// TODO: remove these eslint-disable rules
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable camelcase */
-
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
@@ -37,23 +31,29 @@ async function main() {
     for (const workLog of worklogs) {
       const { date } = workLog;
       const eventId = dates[date];
-      const eventFormatWorklog = googleCalendarEventsUtils.workLogToEventFormat(workLog);
+      const eventFormatWorklog = googleCalendarEventsUtils.workLogToEventFormat(
+        workLog
+      );
       if (eventId) {
         console.log(`Updating existing event: ${eventId}`);
         const event = await googleCalendarEventsApi.getEvent(calendar, eventId);
-        const { data: updatedEventData } = googleCalendarEventsUtils.updateEventDescription(
+        const {
+          data: updatedEventData
+        } = googleCalendarEventsUtils.updateEventDescription(
           event,
-          eventFormatWorklog.description,
+          eventFormatWorklog.description
         );
         await googleCalendarEventsApi.updateEvent(
           calendar,
           eventId,
-          updatedEventData,
+          updatedEventData
         );
       } else {
         console.log('Inserting new event');
-        const insertEventRes = await googleCalendarEventsApi
-          .insertEvent(calendar, eventFormatWorklog);
+        const insertEventRes = await googleCalendarEventsApi.insertEvent(
+          calendar,
+          eventFormatWorklog
+        );
         const { data: insertEventResData } = insertEventRes;
         dates[date] = insertEventResData.id;
       }
@@ -68,7 +68,7 @@ function authorize(credentials) {
   const oAuth2Client = googleApiAuth.makeOAuth2Client(
     client_id,
     client_secret,
-    redirect_uris[0],
+    redirect_uris[0]
   );
 
   try {
@@ -81,15 +81,18 @@ function authorize(credentials) {
 
     const rl = readline.createInterface({
       input: process.stdin,
-      output: process.stdout,
+      output: process.stdout
     });
 
     return new Promise((res, rej) => {
-      rl.question('Enter the code from that page here: ', async (code) => {
+      rl.question('Enter the code from that page here: ', async code => {
         try {
-          const { tokens } = await googleApiAuth.getClientsToken(oAuth2Client, code);
+          const { tokens } = await googleApiAuth.getClientsToken(
+            oAuth2Client,
+            code
+          );
           oAuth2Client.setCredentials(tokens);
-          fs.writeFile(TOKEN_PATH, JSON.stringify(tokens), (err) => {
+          fs.writeFile(TOKEN_PATH, JSON.stringify(tokens), err => {
             if (err) console.error(err);
             console.log('Token stored to', TOKEN_PATH);
           });

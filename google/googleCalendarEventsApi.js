@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-restricted-syntax */
 const { google } = require('googleapis');
 const dayjs = require('dayjs');
 
@@ -11,7 +9,7 @@ function initCalendar(auth) {
 function deleteEvent(calendar, eventId) {
   return calendar.events.delete({
     calendarId: 'primary',
-    eventId,
+    eventId
   });
 }
 
@@ -27,7 +25,7 @@ function fetchEventsOfTheMonth(calendar) {
     .list({
       calendarId: 'primary',
       timeMin: startOfTheMonth,
-      timeMax: endOfTheMonth,
+      timeMax: endOfTheMonth
     })
     .then(res => res.data.items);
 }
@@ -47,14 +45,14 @@ function updateEvent(calendar, eventId, eventData) {
   return calendar.events.update({
     calendarId: 'primary',
     eventId,
-    resource: eventData,
+    resource: eventData
   });
 }
 
 function insertEvent(calendar, eventData) {
   return calendar.events.insert({
     calendarId: 'primary',
-    resource: eventData,
+    resource: eventData
   });
 }
 
@@ -67,5 +65,5 @@ module.exports = {
   getEvent,
   insertEvent,
   updateEvent,
-  clearEventsOfTheMonth,
+  clearEventsOfTheMonth
 };

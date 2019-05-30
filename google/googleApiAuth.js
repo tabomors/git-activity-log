@@ -1,10 +1,9 @@
 const { google } = require('googleapis');
 
-
 function generateAuthUrl(oAuth2Client, scopes) {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
-    scope: scopes,
+    scope: scopes
   });
   return authUrl;
 }
@@ -18,7 +17,7 @@ function makeOAuth2Client(clientId, clientSecret, redirectUri) {
   const oAuth2Client = new google.auth.OAuth2(
     clientId,
     clientSecret,
-    redirectUri,
+    redirectUri
   );
   return oAuth2Client;
 }
@@ -32,5 +31,5 @@ module.exports = {
   getClientsToken,
   updateClientWithToken,
   generateAuthUrl,
-  makeOAuth2Client,
+  makeOAuth2Client
 };
