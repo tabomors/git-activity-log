@@ -36,6 +36,8 @@ You should create `project.json` file with following structure:
 
 It generates jsons with logs data
 
+- You have to enable the GoogleCalendar APi. Go to https://developers.google.com/calendar/quickstart/nodejs and press "Enable the Google Calendar API" button. Then put generated `credentials.json` to the root directory
+
 - `./google/googleCalendarWorklogToEventsCli.js`
 
 P.S For now i support only Google Calendar
