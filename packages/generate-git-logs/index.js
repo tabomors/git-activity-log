@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
 const { exec } = require('child_process');
-const { argv } = require('yargs').boolean('all');
+const { argv } = require('yargs')
+  .boolean('all')
+  .string('author')
+  .string('path');
 const nanoid = require('nanoid');
 
 const PARAMS_SEPARATOR = nanoid();

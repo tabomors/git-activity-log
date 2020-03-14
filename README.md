@@ -29,12 +29,14 @@ You should create `project.json` file with following structure:
 ]
 ```
 
-## Install deps and run:
+## Example of usage:
 
 - `npm i`
-- `./genReport.js`
+- `./packages/prepare-git-logs/index.js --logsDest ./logs --projectsConfig . /projects.json`
 
 It generates jsons with logs data
+
+## TODO:
 
 - You have to enable the GoogleCalendar APi. Go to https://developers.google.com/calendar/quickstart/nodejs and press "Enable the Google Calendar API" button. Then put generated `credentials.json` to the root directory
 
