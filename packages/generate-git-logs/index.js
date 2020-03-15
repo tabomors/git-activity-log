@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const { exec } = require('child_process');
 const { argv } = require('yargs')
   .boolean('all')
   .string('author')
   .string('path');
 const nanoid = require('nanoid');
+const shell = require('shelljs');
 
 const PARAMS_SEPARATOR = nanoid();
 const LINES_SEPARATOR = nanoid();
@@ -24,27 +24,29 @@ const command = formatParams => `cd ${argv.path || '.'}
      PARAMS_SEPARATOR
    )}${LINES_SEPARATOR}" ${logOptions}`;
 
-const log = (schema, proccessValue = (k, v) => v) =>
-  new Promise((resolve, reject) => {
-    const keys = Object.keys(schema);
-    const formatParams = keys.map(key => schema[key]);
+const log = (schema, processValue = (k, v) => v) => {
+  const keys = Object.keys(schema);
+  const formatParams = keys.map(key => schema[key]);
 
-    exec(command(formatParams), (err, stdout) => {
-      if (err) reject(err);
-      else {
-        const listOfLogs = stdout
-          .split(LINES_SEPARATOR)
-          .filter(line => line.length)
-          .map(line =>
-            line.split(PARAMS_SEPARATOR).reduce((obj, value, idx) => {
-              const key = keys[idx];
-              return { ...obj, [key]: proccessValue(key, value) };
-            }, {})
-          );
-        resolve(JSON.stringify(listOfLogs, null, '\t'));
-      }
-    });
-  });
+  const { code, stderr, stdout } = shell.exec(command(formatParams), { silent: true });
+
+  if (code !== 0) {
+    shell.echo(stderr);
+    shell.exit(code);
+  }
+
+  const listOfLogs = stdout
+    .split(LINES_SEPARATOR)
+    .filter(line => line.length)
+    .map(line =>
+      line.split(PARAMS_SEPARATOR).reduce((obj, value, idx) => {
+        const key = keys[idx];
+        return { ...obj, [key]: processValue(key, value) };
+      }, {})
+    );
+
+  return listOfLogs;
+};
 
 const SCHEMA = {
   date: '%ad',
@@ -54,6 +56,8 @@ const SCHEMA = {
   authorEmail: '%ae'
 };
 
-log(SCHEMA, (k, v) => v.trim())
-  .then(console.log)
-  .catch(console.error);
+const listOfLogs = log(SCHEMA, (k, v) => v.trim());
+
+// TODO: add streams here
+// Put logs to std output
+console.log(JSON.stringify(listOfLogs, null, '\t'));
