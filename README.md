@@ -32,7 +32,7 @@ You should create `project.json` file with following structure:
 ## Example of usage:
 
 - `npm i`
-- `./packages/prepare-git-logs/index.js --logsDest ./logs --projectsConfig . /projects.json`
+- `./packages/prepare-git-logs/index.js --logsDest ./logs --projectsConfig ./projects.json`
 
 It generates jsons with logs data
 
