@@ -31,7 +31,7 @@ You should create `project.json` file with following structure:
 
 ## Example of usage:
 
-- `./packages/prepare-git-logs/index.js --logsDest ./logs --projectsConfig ./projects.json`
+- `./packages/generate-git-logs/index.js --logsDest ./logs --projectsConfig ./projects.json`
 
 It will generate json files with logs data
 
