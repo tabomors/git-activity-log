@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
+// FIXME: it does not work at all because of wrong paths
+// TODO: move to argv
+
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-const googleApiAuth = require('./googleApiAuth');
+const googleApiAuth = require('google-api-auth');
 const googleCalendarEventsApi = require('./googleCalendarEventsApi');
 const googleCalendarEventsUtils = require('./googleCalendarEventsUtils');
 
@@ -107,5 +110,4 @@ function authorize(credentials) {
   }
 }
 
-// Script starts from here
-main();
+module.exports = main;
