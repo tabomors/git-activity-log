@@ -31,10 +31,16 @@ You should create `project.json` file with following structure:
 
 ## Example of usage:
 
-- `npm i`
 - `./packages/prepare-git-logs/index.js --logsDest ./logs --projectsConfig ./projects.json`
 
-It generates jsons with logs data
+It will generate json files with logs data
+
+Merge logs if it is needed:
+
+- `./packages/merge-git-logs/index.js --logsInput ./logs/project_stas.morozevich@gmail.com.json ./logs/project1_stas.morozevich@gmail.com.json --logsOutput ./logs/worklog.json`
+
+It will merge logs in one file
+
 
 ## TODO:
 

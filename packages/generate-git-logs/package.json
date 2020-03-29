@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "parse-git-logs": "0.0.1",
+    "merge-git-logs": "0.0.1"
+  }
 }

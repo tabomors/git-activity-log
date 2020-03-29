@@ -17,7 +17,9 @@ console.log(
 );
 
 // Read log files as a streams
-const readStreams = argv.logsInput.map(fileName => fs.createReadStream(path.resolve(__dirname, fileName)));
+const readStreams = argv.logsInput.map(fileName =>
+  fs.createReadStream(fileName)
+);
 // Combine them to one stream
 const combinedStream = CombinedStream.create();
 readStreams.forEach((readStream) => {

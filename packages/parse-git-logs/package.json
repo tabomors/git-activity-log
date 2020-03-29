@@ -1,5 +1,5 @@
 {
-  "name": "prepare-git-logs",
+  "name": "parse-git-logs",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -8,9 +8,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "generate-git-logs": "0.0.1",
-    "merge-git-logs": "0.0.1"
-  }
+  "license": "ISC"
 }

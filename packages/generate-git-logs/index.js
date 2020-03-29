@@ -1,63 +1,31 @@
 #!/usr/bin/env node
 
-const { argv } = require('yargs')
-  .boolean('all')
-  .string('author')
-  .string('path');
-const nanoid = require('nanoid');
 const shell = require('shelljs');
+const path = require('path');
+const fs = require('fs');
+const { argv } = require('yargs')
+  .string('logsDest')
+  .string('projectsConfig');
+const { log, defaultFormatParams } = require('parse-git-logs');
 
-const PARAMS_SEPARATOR = nanoid();
-const LINES_SEPARATOR = nanoid();
+const projects = JSON.parse(fs.readFileSync(argv.projectsConfig));
 
-const now = new Date();
-const currentMonth = `0${now.getMonth() + 1}`.slice(-2);
-const currentYear = now.getFullYear();
-const startOfTheMonth = `01.${currentMonth}.${currentYear}`;
+const logsDir = argv.logsDest;
 
-const logOptions = `--date=short --reverse ${
-  argv.all ? '--all' : '--branches'
-} --since=${startOfTheMonth} --author=${argv.author || ''}`;
+shell.exec(`mkdir -p ${logsDir}`);
 
-const command = formatParams => `cd ${argv.path || '.'}
-   git log --pretty=format:"${formatParams.join(
-     PARAMS_SEPARATOR
-   )}${LINES_SEPARATOR}" ${logOptions}`;
+for (const project of projects) {
+  const { authors, pathDir, alias } = project;
 
-const log = (schema, processValue = (k, v) => v) => {
-  const keys = Object.keys(schema);
-  const formatParams = keys.map(key => schema[key]);
-
-  const { code, stderr, stdout } = shell.exec(command(formatParams), { silent: true });
-
-  if (code !== 0) {
-    shell.echo(stderr);
-    shell.exit(code);
-  }
-
-  const listOfLogs = stdout
-    .split(LINES_SEPARATOR)
-    .filter(line => line.length)
-    .map(line =>
-      line.split(PARAMS_SEPARATOR).reduce((obj, value, idx) => {
-        const key = keys[idx];
-        return { ...obj, [key]: processValue(key, value) };
-      }, {})
+  authors.forEach(author => {
+    const logPath = path.resolve(logsDir, `${alias}_${author}.json`);
+    const listOfLogs = log(
+      { all: true, path: pathDir, author },
+      defaultFormatParams,
+      (_, v) => v.trim()
     );
 
-  return listOfLogs;
-};
+    fs.writeFileSync(logPath, JSON.stringify(listOfLogs, null, '\t'));
+  });
+}
 
-const SCHEMA = {
-  date: '%ad',
-  message: '%B',
-  refs: '%D',
-  authorName: '%an',
-  authorEmail: '%ae'
-};
-
-const listOfLogs = log(SCHEMA, (k, v) => v.trim());
-
-// TODO: add streams here
-// Put logs to std output
-console.log(JSON.stringify(listOfLogs, null, '\t'));
