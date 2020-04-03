@@ -37,9 +37,13 @@ It will generate json files with logs data
 
 Merge logs if it is needed:
 
-- `./packages/merge-git-logs/index.js --logsInput ./logs/project_stas.morozevich@gmail.com.json ./logs/project1_stas.morozevich@gmail.com.json --logsOutput ./logs/worklog.json`
+- `./packages/group-worklog/group-worklog-cli.js --logsInput ./logs/project_stas.morozevich@gmail.com.json ./logs/project1_stas.morozevich@gmail.com.json --logsOutput ./logs/worklog.json`
 
 It will merge logs in one file
+
+### Grouping:
+
+`./packages/group-worklog/index.js --logsInput ./logs/log.json --logsOutput ./logs/foo.json --taskPattern '^.*(KEK-\d\d?\d?\d?).*' --defaultTaskName 'KEK-106' --taskNameTemplate '{{ticket}} (https://jira.kek.com/browse/{{ticket}})'`
 
 
 ## TODO:
