@@ -6,7 +6,7 @@ The goal was to split the logic of extracting commits, merging commits, and maki
 
 ## Pre-requirements:
 
-You should create `project.json` file with following structure:
+You should create `projects.json` file with following structure:
 
 ```
 [

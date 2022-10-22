@@ -1,4 +1,4 @@
-const nanoid = require('nanoid');
+const { nanoid } = require('nanoid');
 const shell = require('shelljs');
 
 const PARAMS_SEPARATOR = `__ps:${nanoid()}__`;
